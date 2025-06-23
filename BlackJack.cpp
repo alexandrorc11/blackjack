@@ -109,19 +109,58 @@ int main(){
 }
 
 void inicializarMazo(Carta mazo[], int& mazoSize){
-    // codigo
+    string palos[]={"Corazones", "Diamantes", "Treboles", "Picas"};
+    string valores[]={"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
+
+    for(int i=0; i<4; i++){
+        for(int j=0; j<13; j++){
+            int puntos=0;
+            if(valores[j]=="A"){
+                puntos=11;
+            }
+            else if(valores[j]=="J" || valores[j]=="Q" || valores[j]=="K"){
+                puntos=10;
+            }
+            else{
+                puntos=atoi(valores[j].c_str());
+            }
+            mazo[mazoSize++]={valores[j], palos[i], puntos};
+        }
+    }
 }
 
 void barajarMazo(Carta mazo[], int mazoSize){
-    // codigo
+    for(int i=0; i<mazoSize; i++){
+        int j=rand()%mazoSize;
+        Carta temp=mazo[i];
+        mazo[i]=mazo[j];
+        mazo[j]=temp;
+    }
 }
 
 void repartirCarta(Jugador& jugador, Carta mazo[], int& mazoSize){
-    //codigo
+    if(mazoSize==0){
+        cout<< "El mazo esta vacio! Reiniciando mazo...\n";
+        inicializarMazo(mazo, mazoSize);
+        barajarMazo(mazo, mazoSize);
+    }
+
+    jugador.mano[jugador.numCartas++]=mazo[--mazoSize];
 }
 
 void mostrarMano(const Jugador& jugador, bool esBanca){
-    //codigo
+    if(esBanca && jugador.numCartas==2 && !jugador.plantado){
+        cout<< "1. [Carta Oculta]\n";
+        cout<< "2." << jugador.mano[1].valor << " de " << jugador.mano[1].palo<< "\n";
+    }
+    else{
+        for(int i=0; i<jugador.numCartas; i++){
+            cout<< i+1 << ". " << jugador.mano[i].valor<< " de " <<jugador.mano[i].palo << "\n";
+        }
+        if(jugador.plantado || !esBanca){
+            cout << "Total: " << jugador.puntos << " puntos\n";
+        }
+    }
 }
 
 int calcularPuntos(Jugador& jugador){
