@@ -164,16 +164,75 @@ void mostrarMano(const Jugador& jugador, bool esBanca){
 }
 
 int calcularPuntos(Jugador& jugador){
-    //codigo
-    return 0;
+    int total=0;
+    int ases=0;
+
+    for(int i=0; i<jugador.numCartas; i++){
+        total+= jugador.mano[i].puntos;
+        if(jugador.mano[i].valor=="A"){
+            ases++;
+        }
+    }
+    while(total>PUNTOS_GANADORES&&ases>0){
+        total-=10;
+        ases--;
+    }
+    jugador.puntos=total;
+    return total;
 }
 
 void turnoJugador(Jugador& jugador, Carta mazo[], int& mazoSize){
-    //codigo
+    char opcion;
+
+    while(jugador.puntos<PUNTOS_GANADORES && !jugador.plantado){
+        cout<< "\nQuieres pedir carta (P) o plantarte (S)? ";
+        cin >> opcion;
+        cin.ignore(1000, '\n');
+
+        if(toupper(opcion)== 'P'){
+            repartirCarta(jugador, mazo, mazoSize);
+            calcularPuntos(jugador);
+            
+            cout<<"\nTu nueva mano (" << jugador.puntos << " puntos):\n";
+            mostrarMano(jugador, false);
+
+            if(jugador.puntos >PUNTOS_GANADORES){
+                cout << "\nTe has pasado de 21! Pierdes automaticamente.\n";
+                return;
+            }
+        }
+	    else if(toupper(opcion)== 'S'){
+            jugador.plantado =true;
+            cout <<"\nTe has plantado con " << jugador.puntos << " puntos\n";
+        }
+	    else{
+            cout<< "Opcion no valida. Intenta nuevamente.\n";
+        }
+    }
 }
 
 void turnoBanca(Jugador& banca, Carta mazo[], int& mazoSize){
-    //codigo
+    cout <<"\n--- TURNO DE LA BANCA ---\n";
+    cout<< "Mano completa de la banca:\n";
+    mostrarMano(banca, false);
+
+    while(banca.puntos<PUNTOS_MINIMOS_BANCA && banca.puntos<PUNTOS_GANADORES){
+        cout << "\nLa banca pide otra carta...\n";
+        repartirCarta(banca, mazo, mazoSize);
+        calcularPuntos(banca);
+        
+        cout<<"Nueva mano de la banca (" << banca.puntos << " puntos):\n";
+        mostrarMano(banca, false);
+
+        if(banca.puntos > PUNTOS_GANADORES){
+            cout <<"\nLa banca se ha pasado de 21. Ganas automaticamente!!\n";
+            return;
+        }
+    }
+    if(banca.puntos>=PUNTOS_MINIMOS_BANCA){
+        cout << "\nLa banca se planta con "<< banca.puntos << " puntos.\n";
+        banca.plantado=true;
+    }
 }
 
 string determinarGanador(Jugador& jugador, Jugador& banca){
