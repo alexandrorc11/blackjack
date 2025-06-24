@@ -299,15 +299,35 @@ void mostrarHistorial(){
 }
 
 string obtenerFechaActual(){
-    //codigo
-    return "";
+    time_t ahora=time(0);
+    tm* tiempo=localtime(&ahora);
+    char buffer[80];
+    strftime(buffer, sizeof(buffer), "%d/%m/%Y %H:%M:%S", tiempo);
+    return string(buffer);
 }
 
 bool preguntarRepetirJuego(){
-    // codigo
-    return false;
+    char respuesta;
+    while(true){
+        cout<< "\nQuieres jugar otra vez? (S/N): ";
+        cin >>respuesta;
+        cin.ignore(1000, '\n');
+
+        respuesta=toupper(respuesta);
+        if(respuesta=='S'){
+            return true;
+        } 
+        else if(respuesta=='N'){
+            return false;
+        } 
+        else{
+            cout<< "Opcion no valida. Por favor ingrese S o N.\n";
+        }
+    }
 }
 
 void limpiarMano(Jugador& jugador){
-    //codigo
+    jugador.numCartas=0;
+    jugador.puntos=0;
+    jugador.plantado=false;
 }
