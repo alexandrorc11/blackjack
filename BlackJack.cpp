@@ -178,7 +178,7 @@ int calcularPuntos(Jugador& jugador){
         ases--;
     }
     jugador.puntos=total;
-    return total;
+    return total;
 }
 
 void turnoJugador(Jugador& jugador, Carta mazo[], int& mazoSize){
@@ -232,20 +232,70 @@ void turnoBanca(Jugador& banca, Carta mazo[], int& mazoSize){
     if(banca.puntos>=PUNTOS_MINIMOS_BANCA){
         cout << "\nLa banca se planta con "<< banca.puntos << " puntos.\n";
         banca.plantado=true;
-    }
+    }
 }
 
 string determinarGanador(Jugador& jugador, Jugador& banca){
-    //codigo
-    return "";
+    cout<<"\n--- RESULTADO FINAL ---\n";
+    cout<<"Tu puntuacion final: "<< jugador.puntos<< "\n";
+    cout<<"Puntuacion final de la banca: "<< banca.puntos << "\n\n";
+    string resultado;
+
+    if(jugador.puntos>PUNTOS_GANADORES){
+        cout<< "Te has pasado de 21. La banca gana!\n";
+        resultado= "Derrota";
+    } 
+    else if(banca.puntos > PUNTOS_GANADORES){
+        cout <<"La banca se ha pasado de 21 Tu ganas!\n";
+        resultado ="Victoria";
+    }
+    else if(jugador.puntos>banca.puntos){
+        cout<< "Tienes mas puntos que la banca. Tu ganas!\n";
+        resultado ="Victoria";
+    } 
+    else if(banca.puntos > jugador.puntos){
+        cout<< "La banca tiene mas puntos La banca gana!\n";
+        resultado ="Derrota";
+    } 
+    else{
+        cout<< "Empate.La banca gana por reglas del juego!\n";
+        resultado ="Derrota";
+    }
+    return resultado;
 }
 
 void guardarPartida(const Jugador& jugador, const string& resultado){
-    //codigo
+    ofstream archivo("historial.txt", ios::app);
+    if(archivo.is_open()){
+        archivo<<jugador.nombre << "," << resultado<< ","<< obtenerFechaActual()<< "\n";
+        archivo.close();
+    } 
+    else{
+        cout<<"Error al guardar el historial de partidas\n";
+    }
 }
 
 void mostrarHistorial(){
-    // codigo
+    ifstream archivo("historial.txt");
+    if(archivo.is_open()){
+        string linea;
+        cout<< left << setw(20)<< "Jugador" << setw(10)<< "Resultado" << "Fecha\n";
+        cout<<"----------------------------------------\n";
+        
+        while(getline(archivo, linea)){
+            size_t pos1=linea.find(',');
+            size_t pos2=linea.find(',', pos1 + 1);
+            string nombre=linea.substr(0, pos1);
+            string resultado= linea.substr(pos1 + 1, pos2 - pos1 - 1);
+            string fecha= linea.substr(pos2 + 1);
+            
+            cout <<left<< setw(20) << nombre << setw(10) << resultado << fecha << "\n";
+        }
+        archivo.close();
+    } 
+    else{
+        cout <<"No hay historial de partidas guardadas\n";
+    }
 }
 
 string obtenerFechaActual(){
